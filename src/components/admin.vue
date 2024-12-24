@@ -171,7 +171,7 @@ const logout = () => {
 .el-menu .el-menu-item,
 .el-menu .el-submenu__title {
   font-family: 'Arial', sans-serif; /* 更改字体 */
-  font-size: 14px; /* 设置字体大小 */
+  font-size: 18px; /* 设置字体大小 */
   line-height: 24px; /* 设置行高 */
   color: #faf7f7; /* 设置字体颜色 */
 }
@@ -189,12 +189,12 @@ const logout = () => {
 .normal-link {
   color: white; /* 未点击时的颜色 */
   text-decoration: none; /* 去掉下划线 */
-  font-size: 20px
+  font-size: 23px
 }
 
 /* 激活状态下的样式 */
 .active-link {
-  color: blue; /* 点击后的颜色 */
+  color: lightblue; /* 点击后的颜色 */
 }
 
 </style>

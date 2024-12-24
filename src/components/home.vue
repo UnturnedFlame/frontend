@@ -36,7 +36,7 @@
                 </template>
               </a-input>
             </a-form-item>
-            <a-form-item label="角色" name="role">
+            <!-- <a-form-item label="角色" name="role">
               <a-select
                 v-model:value="formState.role"
                 size="large"
@@ -46,7 +46,7 @@
                 <a-select-option value="admin">系统管理员</a-select-option>
                 <a-select-option value="superuser">开发者用户</a-select-option>
               </a-select>
-            </a-form-item>
+            </a-form-item> -->
             <a-form-item label="">
               <a-button
                 type="primary"
@@ -85,10 +85,15 @@ import { UserOutlined, LockOutlined } from "@ant-design/icons-vue";
 import api from "../utils/api.js";
 
 const formRef = ref();
+// const formState = reactive({
+//   username: "",
+//   password: "",
+//   role: "",
+// });
+
 const formState = reactive({
   username: "",
   password: "",
-  role: "",
 });
 
 const goToResetPassword = () => {
@@ -138,6 +143,8 @@ const login = () => {
               message: "登录成功",
               type: "success",
             });
+
+            let role = response.data.role;
             let tokenGot = response.data.token;
 
             // 保存 token 和登录时间到 localStorage
@@ -147,10 +154,10 @@ const login = () => {
             window.sessionStorage.setItem("username", formState.username);
 
             // 保存用户角色到 localStorage
-            window.sessionStorage.setItem("role", formState.role);
+            window.sessionStorage.setItem("role", role);
 
             // 根据用户登录时所选择的角色跳转到用户界面或者管理员界面
-            if (formState.role == "user" || formState.role == "superuser") {
+            if (role == "user" || role == "superuser") {
               router.push("/UserPlatform");
             } else {
               router.push("/admin");
@@ -158,7 +165,7 @@ const login = () => {
           }
         }
       })
-      .catch((error) => {
+      .catch((error: any) => {
         // 处理错误
         console.error("请求错误：", error);
         // 显示错误消息
