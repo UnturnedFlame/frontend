@@ -9279,7 +9279,23 @@ import '@fortawesome/fontawesome-free/css/all.css';
 
 //自定义侧边栏样式start
 .el-aside-demo {
+  background: white;
+  overflow-y: auto;
+  overflow-x: hidden;
+  margin-right: 1px;
+  box-shadow: 3px 0 3px rgba(0, 0, 0, 0.2);
+  z-index: 2;
+  width: 250px;
+  align-items: center;
+  font-family: 'Microsoft YaHei', sans-serif; // 添加字体属性
+}
 
+.aside-title {
+  font-size: 25px;
+  color: #34374f;
+  border: rgb(204, 208, 214) 1px solid;
+  width: 100%;
+  font-family: 'Microsoft YaHei', sans-serif; // 添加字体属性
 }
 
 /* 滚动条轨道样式 */

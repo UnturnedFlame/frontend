@@ -164,7 +164,7 @@
                   :type="scope.row.isPublish == '未发布' ? 'success' : 'warning'"
                   v-if="scope.row.isPublish === '未发布'"
                   style="width: 90px;"
-                  >{{scope.row.isPublish == '未发布' ? '发布模型' : '取消发布'}}</el-button
+                  >{{scope.row.isPublish == '未发布' ? '申请发布' : '取消发布'}}</el-button
                 >
               </template>
 
@@ -445,7 +445,7 @@ const fetchModels = () => {
     });
 };
 
-// 发布模型
+// 申请发布模型
 const publishModelConfirm = (index: number, row: modelInfo) => {
     let modelId = row.id
     let formData = new FormData()

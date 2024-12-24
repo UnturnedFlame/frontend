@@ -11,7 +11,8 @@
           <!-- <div>用户登录</div> -->
 
           <a-form :model="formState" :rules="rules" ref="formRef" style="width: 70%; height: 80%">
-            <a-form-item label="账号" name="username">
+            <div style="text-align: left; font-size: 18px; color: #808080">账号</div>
+            <a-form-item  name="username">
               <a-input
                 placeholder="请输入账号"
                 v-model:value="formState.username"
@@ -23,7 +24,8 @@
                 </template>
               </a-input>
             </a-form-item>
-            <a-form-item label="密码" name="password">
+            <div style="text-align: left; font-size: 18px;color: #808080">密码</div>
+            <a-form-item  name="password">
               <a-input
                 placeholder="请输入密码"
                 v-model:value="formState.password"
@@ -51,7 +53,7 @@
               <a-button
                 type="primary"
                 html-type="submit"
-                style="width: 100%"
+                style="width: 100%; margin-top: 20px; height: 40px; background-color: lightblue; font-size: 18px"
                 @click="login()"
                 size="large"
                 >登录</a-button
@@ -59,7 +61,7 @@
             </a-form-item>
           </a-form>
           <div style="position: absolute; right: 5px; bottom: 0px">
-            <el-button @click="goToResetPassword" class="button"> 忘记密码? </el-button>
+            <el-button @click="goToResetPassword" class="button" style=""> 忘记密码? </el-button>
           </div>
         </div>
       </div>
@@ -188,6 +190,7 @@ const login = () => {
   justify-content: center;
   left: 0;
   top: 0;
+  font-family: 'Microsoft YaHei';
 
   .login-panel {
     position: absolute;
@@ -198,11 +201,11 @@ const login = () => {
     margin: auto;
 
     padding: 25px;
-    width: 26%;
+    width: 20%;
     min-width: 260px;
     height: 30%;
     min-height: 300px;
-    background: rgba(255, 255, 255, 0.6);
+    background: rgba(255, 255, 255, 0.75);
     border-radius: 5%;
     box-shadow: 2px 2px 10px #ddd;
 
@@ -213,7 +216,7 @@ const login = () => {
 
     .login-title {
       display: inline-block;
-      font-size: 22px;
+      font-size: 25px;
       // height: 30%;
       
       text-align: center;
