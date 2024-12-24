@@ -53,7 +53,7 @@
               <a-button
                 type="primary"
                 html-type="submit"
-                style="width: 100%; margin-top: 20px; height: 40px; background-color: lightblue; font-size: 18px"
+                style="width: 100%; margin-top: 20px; height: 40px; background-color: #8C8C8C; font-size: 18px"
                 @click="login()"
                 size="large"
                 >登录</a-button
@@ -362,5 +362,18 @@ const login = () => {
     color: rgb(213, 215, 230);
     background-color: #326aff;
   }
+}
+
+a-button {
+  width: 100%;
+  margin-top: 20px;
+  height: 40px;
+  background-color: #8C8C8C;
+  font-size: 18px;
+  transition: background-color 0.3s ease; /* 添加过渡效果 */
+}
+
+a-button:hover {
+  background-color: #D3D3D3; /* 淡灰色 */
 }
 </style>
