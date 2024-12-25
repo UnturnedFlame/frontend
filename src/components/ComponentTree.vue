@@ -46,43 +46,47 @@
                 </el-icon>
               </span>
             </span>
-            <!-- 编辑对话框 -->
-            <el-dialog
-              v-model="isEditDialogVisibleOfTree"
-              title="编辑节点"
-              :close-on-click-modal="false"
-              :before-close="handleCloseOfTree"
-              class="custom-dialog"
-              style="width: 40%"
-            >
-              <span style="margin-right: 20px">新的节点名称：</span>
-              <el-input
-                v-model="editNodeLabelOfTree"
-                placeholder="请输入新的节点名称"
-                :autofocus="true"
-                class="half-width-input"
-                style="width: 50%"
-              />
-              <div style="font-size: 15px; color: gray">只能包含中英文、数字和下划线</div>
-              <!-- <span slot="footer" class="dialog-footer">
-        <el-button @click="isEditDialogVisibleOfTree = false">取消</el-button>
-        <el-button type="primary" @click="saveEditOfTree">保存</el-button>
-      </span> -->
-              <template #footer>
-                <div class="dialog-footer">
-                  <el-button
-                    @click="isEditDialogVisibleOfTree = false"
-                    style="width: 100px"
-                    >取消</el-button
-                  >
-                  <el-button type="primary" @click="saveEditOfTree(data)" style="width: 100px"
-                    >确认</el-button
-                  >
-                </div>
-              </template>
-            </el-dialog>
           </template>
         </el-tree>
+        <!-- 编辑对话框 -->
+        <el-dialog
+          v-model="isEditDialogVisibleOfTree"
+          title="编辑节点"
+          :close-on-click-modal="false"
+          :before-close="handleCloseOfTree"
+          class="custom-dialog"
+          style="width: 40%"
+        >
+          <span style="margin-right: 20px">新的节点名称：</span>
+          <el-input
+            v-model="editNodeLabelOfTree"
+            placeholder="请输入新的节点名称"
+            :autofocus="true"
+            class="half-width-input"
+            style="width: 50%"
+          />
+          <div style="font-size: 15px; color: gray">只能包含中英文、数字和下划线</div>
+          <!-- 标记节点为最终类型后，不可添加子节点，而可以向其中添加模型 -->
+          <span>是否标记节点为最终类型：</span>
+          <el-radio-group v-model="isNodeEditable" style="width: 50%">
+            <el-radio :value="true" size="large">否</el-radio>
+            <el-radio :value="false" size="large">是</el-radio>
+          </el-radio-group>
+          <!-- <span slot="footer" class="dialog-footer">
+                <el-button @click="isEditDialogVisibleOfTree = false">取消</el-button>
+                <el-button type="primary" @click="saveEditOfTree">保存</el-button>
+            </span> -->
+          <template #footer>
+            <div class="dialog-footer">
+              <el-button @click="isEditDialogVisibleOfTree = false" style="width: 100px"
+                >取消</el-button
+              >
+              <el-button type="primary" @click="saveEditOfTree" style="width: 100px"
+                >确认</el-button
+              >
+            </div>
+          </template>
+        </el-dialog>
       </div>
     </div>
   </div>
@@ -241,12 +245,10 @@ const editNodeLabelOfTree = ref("");
 //   },
 // ]);
 
-
 // 定义从父组件接收到的userrole
 const props = defineProps({
   userRole: String,
 });
-
 
 // 树形结构数据
 const dataSourceOfTree = reactive<Tree[]>([]);
@@ -321,26 +323,28 @@ const appendNodeOfTree = (data: Tree) => {
   console.log("添加节点方法执行...");
   console.log("data: ", data);
 
-  if (data.disabled){
-    let parentNodeValue = data.value
-    let treeName = data.value.split('.')[0]
-    let formData = new FormData()
-    formData.append('treeName', treeName)
-    formData.append('parentNodeValue', parentNodeValue)
+  if (data.disabled) {
+    let parentNodeValue = data.value;
+    let treeName = data.value.split(".")[0];
+    let formData = new FormData();
+    formData.append("treeName", treeName);
+    formData.append("parentNodeValue", parentNodeValue);
 
-    api.post("user/add_node_to_tree/", formData).then((response: any)=>{
-        if (response.data.code === 200){
-          ElMessage.success("添加节点成功")
-          getComponentTrees()
-        }else{
-          ElMessage.error("添加节点失败, " + response.data.message)
+    api
+      .post("user/add_node_to_tree/", formData)
+      .then((response: any) => {
+        if (response.data.code === 200) {
+          ElMessage.success("添加节点成功");
+          getComponentTrees();
+        } else {
+          ElMessage.error("添加节点失败, " + response.data.message);
         }
-    })
-    .catch((error: any)=>{
-      ElMessage.error(error+", 添加节点失败, 请重试")
-    })
-  }else{
-    ElMessage.warning("该节点不可添加子节点")
+      })
+      .catch((error: any) => {
+        ElMessage.error(error + ", 添加节点失败, 请重试");
+      });
+  } else {
+    ElMessage.warning("该节点不可添加子节点");
   }
 
   //   const newChild = { id: idOfTree++, label: "New Node", children: [] };
@@ -384,8 +388,8 @@ const removeNodeOfTree = (data: Tree) => {
 
 // 编辑节点
 const editOfTree = (data: Tree) => {
-//   console.log("编辑节点方法执行...");
-//   console.log("editOfTree: ", data);
+  //   console.log("编辑节点方法执行...");
+  //   console.log("editOfTree: ", data);
 
   //   let formData = new FormData();
   //   formData.append("treeName", data.nodeValue.split('.')[0]);
@@ -394,9 +398,10 @@ const editOfTree = (data: Tree) => {
   editingNodeOfTree.value = data; // 正在修改的节点
   isEditDialogVisibleOfTree.value = true;
 };
-
+// 修改节点的可修改性
+const isNodeEditable = ref(true);
 // 保存编辑
-const saveEditOfTree = (data: Tree) => {
+const saveEditOfTree = () => {
   //   if (editingNodeOfTree.value) {
   //     editingNodeOfTree.value.label = editNodeLabelOfTree.value;
   //     let formData
@@ -404,13 +409,13 @@ const saveEditOfTree = (data: Tree) => {
   //     isEditDialogVisibleOfTree.value = false;
   //   }
   // 检查editNodeLabelOfTree的值不能为空，且只能包含为中英文、数字和下划线的组合
-//   console.log("saveEditOfTree data: ", data)
-  
+  //   console.log("saveEditOfTree data: ", data)
+
   if (
     !editNodeLabelOfTree.value ||
     !/^[a-zA-Z0-9_\u4e00-\u9fa5]+$/.test(editNodeLabelOfTree.value)
   ) {
-    console.log("data: ", data)
+    // console.log("data: ", data);
     ElMessage({
       message: "请输入有效的组件名称",
       type: "error",
@@ -418,15 +423,16 @@ const saveEditOfTree = (data: Tree) => {
     return;
   } else {
     let formData = new FormData();
-    if (editingNodeOfTree.value){
-        formData.append("treeName", editingNodeOfTree.value.value.split(".")[0]); // 树的根节点的名称
-        formData.append("newNodeName", editNodeLabelOfTree.value);  // 新节点的名称
-        formData.append("nodeValue", editingNodeOfTree.value.value);
-    }else{
-        console.log("editingNodeOfTree is null");
-        return;
+    if (editingNodeOfTree.value) {
+      formData.append("treeName", editingNodeOfTree.value.value.split(".")[0]); // 树的根节点的名称
+      formData.append("newNodeName", editNodeLabelOfTree.value); // 新节点的名称
+      formData.append("nodeValue", editingNodeOfTree.value.value);
+      formData.append("nodeType", isNodeEditable.value ? "node" : "leaf");
+    } else {
+      console.log("editingNodeOfTree is null");
+      return;
     }
-    
+
     api.post("user/edit_node_name/", formData).then((response: any) => {
       if (response.data.code === 200) {
         ElMessage({
@@ -434,16 +440,15 @@ const saveEditOfTree = (data: Tree) => {
           type: "success",
         });
         // 刷新树
-        getComponentTrees()
+        getComponentTrees();
 
         isEditDialogVisibleOfTree.value = false;
-
       } else {
         ElMessage({
-         message: "修改失败，"+response.data.message,
-        })
+          message: "修改失败，" + response.data.message,
+        });
       }
-    })
+    });
   }
 };
 
@@ -493,6 +498,8 @@ const filterNodeOfTree = (value: string, data: any) => {
 <style scoped>
 .custom-dialog {
   width: 30%;
+  display: flex;
+  flex-direction: column;
 }
 
 .custom-dialog .dialog-footer {
@@ -524,5 +531,4 @@ const filterNodeOfTree = (value: string, data: any) => {
   gap: 8px;
   margin-left: 8px;
 }
-
 </style>

@@ -427,7 +427,7 @@
               </my-collapse-item>
               
               <my-collapse-item v-if="userRole === 'user'" name="4" :data="{name:'4'}" item-background="#ebeef4">
-                <template #title>
+                
                   <!-- 搜索框 -->
                   <!-- <div style="
                        width: 100%;
@@ -444,7 +444,8 @@
                       <div style="width: 100%;overflow-x: auto">
                         <div style="">
                           <el-tree
-                              ref="treeRef"
+                              ref
+                              ="treeRef"
                               :data="filteredDataOfTree"
                               style="width: 100%;max-width: 100%;"
                               show-checkbox
@@ -491,9 +492,11 @@
                       </el-dialog>
                     </div>
                   </div> -->
+                  
+
                   <template #title>
                     <div style="padding: 10px;">
-                      <span style="font-size: 20px;">终端用户模型结构树</span>
+                      <span style="font-size: 20px;">开发者用户模型结构树</span>
                     </div>
                   </template>
                   <template #arrow="{ isActive }">
@@ -504,7 +507,6 @@
                   <div class="custom-tree-container" style="width: 100%;">
                     <ComponentTree :userRole="userRole"/>
                   </div>
-                </template>
               </my-collapse-item>
               <my-collapse-item name="5" :data="{name:'5'}" item-background="#ebeef4">
                 <template #title>
@@ -576,7 +578,7 @@
                   </div>
                 </template>
                 <div class="custom-tree-container" style="width: 100%;">
-                  <ComponentTree />
+                  <ComponentTree :userRole="userRole"/>
                 </div>
               </my-collapse-item>
             </my-collapse>
@@ -8873,6 +8875,7 @@ import '@fortawesome/fontawesome-free/css/all.css';
 .node-label {
   //background-color: red;
 }
+
 .node-actions {
   display: flex;
   align-items: center;
