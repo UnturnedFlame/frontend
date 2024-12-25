@@ -7,7 +7,7 @@
       style="width: 100%; margin-bottom: 5px"
     />
     <!-- 新增树形结构 -->
-    <div style="width: 100%; display: flex; flex-direction: row">
+    <div style="width: 100%; display: flex; flex-direction: row" v-if="props.userRole === 'superuser'">
       <el-input
         v-model="nameOfNewTree"
         placeholder="输入名称"
@@ -24,18 +24,20 @@
           ref="treeRef"
           :data="filteredDataOfTree"
           style="width: 100%; max-width: 100%"
-          show-checkbox
           node-key="id"
           :expand-on-click-node="false"
           :default-expand-all="isExpandAllOfTree"
           :filter-node-method="filterNodeOfTree"
           :accordion="false"
         >
-          <template #default="{ node, data }">
+          <template #default="{ data }">
             <span class="custom-tree-node" style="">
-              <span class="node-label">{{ node.label }}</span>
-              <span class="node-actions">
-                <el-icon @click="appendNodeOfTree(data)" :style="{ color: '#67c23a' }">
+              <el-icon v-if="data.isModel" class="model-icon">
+                <img src="@/assets/model-icon.svg" style="width: 20px; height: 20px;" alt="model">
+              </el-icon>
+              <span class="node-label">{{ getNodeLable(data) }}</span>
+              <span class="node-actions" v-if="props.userRole === 'superuser' && !data.isModel">
+                <el-icon @click="appendNodeOfTree(data)" :style="{ color: '#67c23a' }" v-if="data.disabled === true">
                   <Plus />
                 </el-icon>
                 <el-icon @click="removeNodeOfTree(data)" :style="{ color: '#f56c6c' }">
@@ -96,12 +98,16 @@
 import { ElMessage, ElTree } from "element-plus";
 import { ref, watch, reactive, onMounted } from "vue";
 import api from "../utils/api.js";
+import { isNode } from "@vue-flow/core";
 
 interface Tree {
   label: string; // 节点名称
   value: string; // 节点id
   disabled: boolean; // 是否禁用添加子类型
   children?: Tree[]; // 子节点
+  isModel: boolean;  // 是否为模型
+  modelId: string;  // 模型id
+  isPublished: boolean; // 是否发布
 }
 
 const treeRef = ref<InstanceType<typeof ElTree>>();
@@ -264,6 +270,7 @@ const getComponentTrees = () => {
     if (response.data.code === 200) {
       dataSourceOfTree.length = 0;
       response.data.trees.map((tree: Tree) => dataSourceOfTree.push(tree));
+
       console.log("获取到树形结构: ", dataSourceOfTree);
     } else {
       ElMessage.error("获取树形结构失败，" + response.data.message);
@@ -386,6 +393,15 @@ const removeNodeOfTree = (data: Tree) => {
   //   }
 };
 
+
+const getNodeLable = (data: Tree) => {
+  if (!data.isModel){
+    return data.label
+  }else{
+    return data.isPublished ? data.label + " (已发布)" : data.label + " (未发布)";
+  }
+};
+
 // 编辑节点
 const editOfTree = (data: Tree) => {
   //   console.log("编辑节点方法执行...");
@@ -397,9 +413,13 @@ const editOfTree = (data: Tree) => {
 
   editingNodeOfTree.value = data; // 正在修改的节点
   isEditDialogVisibleOfTree.value = true;
+
+  editNodeLabelOfTree.value = data.label
+  isNodeEditable.value = data.disabled
 };
 // 修改节点的可修改性
 const isNodeEditable = ref(true);
+
 // 保存编辑
 const saveEditOfTree = () => {
   //   if (editingNodeOfTree.value) {
@@ -424,6 +444,14 @@ const saveEditOfTree = () => {
   } else {
     let formData = new FormData();
     if (editingNodeOfTree.value) {
+      if(!isNodeEditable.value && editingNodeOfTree.value.children?.length){
+        ElMessage.warning("无法将已经添加子节点的节点设置为最终类型节点")
+        return
+      }
+      if (isNodeEditable.value && !editingNodeOfTree.value.disabled && editingNodeOfTree.value.children?.length ){
+        ElMessage.warning("该节点类型下已经添加了模型，无法将其设为非最终类型节点")
+        return
+      }
       formData.append("treeName", editingNodeOfTree.value.value.split(".")[0]); // 树的根节点的名称
       formData.append("newNodeName", editNodeLabelOfTree.value); // 新节点的名称
       formData.append("nodeValue", editingNodeOfTree.value.value);
@@ -530,5 +558,10 @@ const filterNodeOfTree = (value: string, data: any) => {
   justify-content: center;
   gap: 8px;
   margin-left: 8px;
+}
+
+.model-icon {
+  width: 20px; 
+  height: 20px;
 }
 </style>

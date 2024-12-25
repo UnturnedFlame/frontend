@@ -1620,12 +1620,13 @@
               placeholder="请选择适配部位分类"
               allow-clear
               tree-default-expand-all
-              :tree-data="dataSourceOfTree"
+              :tree-data="filteredDataSource"
               tree-node-filter-prop="label"
+              @select="handleSelectType"
           >
             <template #title="{ value: val, label }">
-              <b v-if="val === 'parent 1-1'" style="color: #08c">sss</b>
-              <template v-else>{{ label }}</template>
+              <!-- <b v-if="val === 'parent 1-1'" style="color: #08c">unknown</b> -->
+              <span>{{ label }}</span>
             </template>
           </a-tree-select>
         </el-form-item>
@@ -1682,6 +1683,12 @@ import datasetManagement from './datasetManagement.vue';
 //////////////////////////////////////////////////////////////////系统组件源码编辑相关
 import editCodeEmbedded from './editCodeEmbedded.vue';
 
+
+// 选中类型，返回id
+// const handleSelectType = (value, node, extra)=>{
+//   console.log("handleSelectType value: ", value)
+//   console.log("handleSelectType node: ", node)
+// }
 
 //模型管理
 // 当子组件删除模型，并且该模型已经被加载，则需要重置模型
@@ -3206,6 +3213,8 @@ const getComponentTrees = async() => {
 async function saveModelOfViewFlow() {
   //显示保存模型表单
   await getComponentTrees();
+
+  console.log("saveModelOfViewFlow trees: ", dataSourceOfTree)
   dialogModle.value = true
 }
 
@@ -4541,6 +4550,8 @@ onMounted(() => {
   plumbIns = jsPlumb.getInstance()
   jsPlumbInit()
 
+  
+
   plumbIns.bind("connection", function (info) {
     let sourceId = info.connection.sourceId
     let targetId = info.connection.targetId
@@ -5871,7 +5882,7 @@ const dialogFormVisible = ref(false)  // 控制保存模型对话框的弹出，
 const modelInfoForm = ref({
   name: '',
   description: '',
-  class: []
+  class: null
 })
 
 // 检查模型参数设置
@@ -6019,6 +6030,22 @@ const checkForm = () => {
   }
 }
 
+// 返回筛选后的树形结构
+const filteredDataSource = computed(() => {
+  return filterTreeData(dataSourceOfTree)
+})
+
+const filterTreeData = (data) => {
+  return data.filter(item => {
+    if (item.isModel) return false;
+    if (item.children) {
+      item.children = filterTreeData(item.children);
+    }
+    return true;
+  });
+}
+
+
 // 完成模型名称等信息的填写后，确定保存模型
 const saveModelConfirm = async (formEl: FormInstance | undefined) => {
   if(!checkForm()){
@@ -6026,7 +6053,7 @@ const saveModelConfirm = async (formEl: FormInstance | undefined) => {
     return
   }else{
 
-    console.log('modelInfoForm1: ', modelInfoForm.value)
+    console.log('saveModelConfirm modelInfoForm: ', modelInfoForm.value)
     // 将模型信息保存到数据库
     let data = new FormData()
     data.append('model_name', modelInfoForm.value.name)
@@ -6034,6 +6061,17 @@ const saveModelConfirm = async (formEl: FormInstance | undefined) => {
     let modelInfo = {"nodeList": nodelistInfo, "connection": contentJson.schedule}
     data.append('model_info', JSON.stringify(modelInfo))
     data.append('description', modelInfoForm.value.description)
+
+    let treeName = modelInfoForm.value.class.split('.')[0]  // 根节点（树名）
+    let parentNodeValue = modelInfoForm.value.class  // 所属于类型的节点值
+
+    console.log('saveModelConfirm treeName: ', treeName)
+    console.log('saveModelConfirm parentNodeValue: ', parentNodeValue)
+    data.append('treeName', treeName)
+    data.append('parentNode', parentNodeValue)
+
+    // 获取树名和节点值
+
     api.post('/user/save_model/', data,
         {
           headers: {"Content-Type": 'multipart/form-data'}
@@ -6047,7 +6085,7 @@ const saveModelConfirm = async (formEl: FormInstance | undefined) => {
           },
         })
       }
-      if (response.data.message == 'save model success') {
+      if (response.data.code == 200) {
         ElMessage({
           message: '保存模型成功',
           type: 'success'
@@ -6064,6 +6102,11 @@ const saveModelConfirm = async (formEl: FormInstance | undefined) => {
       } else if (response.data.code == 400) {
         ElMessage({
           message: '已有同名模型，保存模型失败',
+          type: 'error'
+        })
+      } else {
+        ElMessage({
+          message: '保存模型失败，'+ response.data.message,
           type: 'error'
         })
       }
