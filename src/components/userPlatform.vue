@@ -429,20 +429,18 @@
               <my-collapse-item v-if="userRole === 'user'" name="4" :data="{name:'4'}" item-background="#ebeef4">
                 <template #title>
                   <!-- 搜索框 -->
-                  <div style="
+                  <!-- <div style="
                        width: 100%;
                        display: flex;
                        flex-direction: column;">
-
-                      <el-input
+                       <el-input
                           v-model="searchKeywordOfTree"
                           placeholder="请输入关键字查询"
                           style="width: 100%; margin-bottom: 5px;"
                       />
-
+                    
                     <div style="flex: 1; /* 让树形结构占据剩余空间 */
                          overflow-x: auto; /* 如果树形结构宽度超出屏幕宽度，显示横向滚动条 */">
-                      <!-- 使用 scoped-slot 渲染 -->
                       <div style="width: 100%;overflow-x: auto">
                         <div style="">
                           <el-tree
@@ -475,7 +473,6 @@
                           </el-tree>
                         </div>
                       </div>
-                      <!-- 编辑对话框 -->
                       <el-dialog
                           v-model:visible="isEditDialogVisibleOfTree"
                           title="编辑节点"
@@ -488,11 +485,24 @@
                             :autofocus="true"
                         />
                         <span slot="footer" class="dialog-footer">
-                      <el-button @click="isEditDialogVisibleOfTree = false">取消</el-button>
-                      <el-button type="primary" @click="saveEditOfTree">保存</el-button>
-                    </span>
+                          <el-button @click="isEditDialogVisibleOfTree = false">取消</el-button>
+                          <el-button type="primary" @click="saveEditOfTree">保存</el-button>
+                        </span>
                       </el-dialog>
                     </div>
+                  </div> -->
+                  <template #title>
+                    <div style="padding: 10px;">
+                      <span style="font-size: 20px;">终端用户模型结构树</span>
+                    </div>
+                  </template>
+                  <template #arrow="{ isActive }">
+                    <div style="align-items: center;padding-right: 10px;">
+                      <i :class="['fa', isActive ? 'fa-caret-down' : 'fa-caret-right']"></i>
+                    </div>
+                  </template>
+                  <div class="custom-tree-container" style="width: 100%;">
+                    <ComponentTree :userRole="userRole"/>
                   </div>
                 </template>
               </my-collapse-item>
@@ -552,10 +562,12 @@
               
                 
               </my-collapse-item>
+
+              <!-- 终端用户模型结构树 -->
               <my-collapse-item v-if="userRole === 'superuser'" name="8" :data="{name:'8'}" item-background="#ebeef4">
                 <template #title>
                   <div style="padding: 10px;">
-                    <span style="font-size: 20px;">终端用户模型结构树</span>
+                    <span style="font-size: 20px;">开发者用户模型结构树</span>
                   </div>
                 </template>
                 <template #arrow="{ isActive }">
@@ -564,62 +576,7 @@
                   </div>
                 </template>
                 <div class="custom-tree-container" style="width: 100%;">
-                  <!-- 搜索框 -->
-                  <el-input
-                      v-model="searchKeywordOfTree"
-                      placeholder="请输入关键字查询"
-                      style="width: 100%; margin-bottom: 5px;"
-                  />
-                  <!-- 使用 scoped-slot 渲染 -->
-                  <div style="width: 100%;overflow-x: auto">
-                    <div style="">
-                      <el-tree
-                          ref="treeRef"
-                          :data="filteredDataOfTree"
-                          style="width: 100%;max-width: 100%;"
-                          show-checkbox
-                          node-key="id"
-                          :expand-on-click-node="false"
-                          :default-expand-all="isExpandAllOfTree"
-                          :filter-node-method="filterNodeOfTree"
-                          :accordion="false"
-                      >
-                        <template #default="{ node, data }">
-                      <span class="custom-tree-node" style="">
-                        <span class="node-label">{{ node.label }}</span>
-                        <span class="node-actions">
-                          <el-icon @click="appendOfTree(data)" :style="{color:'#67c23a'}">
-                                <Plus/>
-                          </el-icon>
-                          <el-icon @click="removeOfTree(node, data)" :style="{color:'#f56c6c'}">
-                                <Delete/>
-                          </el-icon>
-                          <el-icon @click="editOfTree(node, data)" :style="{color:'#409eff'}">
-                                <Edit/>
-                          </el-icon>
-                        </span>
-                      </span>
-                        </template>
-                      </el-tree>
-                    </div>
-                  </div>
-                  <!-- 编辑对话框 -->
-                  <el-dialog
-                      v-model:visible="isEditDialogVisibleOfTree"
-                      title="编辑节点"
-                      :close-on-click-modal="false"
-                      :before-close="handleCloseOfTree"
-                  >
-                    <el-input
-                        v-model="editNodeLabelOfTree"
-                        placeholder="请输入新的节点名称"
-                        :autofocus="true"
-                    />
-                    <span slot="footer" class="dialog-footer">
-                      <el-button @click="isEditDialogVisibleOfTree = false">取消</el-button>
-                      <el-button type="primary" @click="saveEditOfTree">保存</el-button>
-                    </span>
-                  </el-dialog>
+                  <ComponentTree />
                 </div>
               </my-collapse-item>
             </my-collapse>
@@ -826,24 +783,24 @@
                     </template>
                     <div class="" style="width: 100%;background-color: white;">
                       <div style="font-size: 20px">加载数据集</div>
-                          <a-button
-                                  type="default"
-                                  style="margin-top: 25px; margin-left: 0px; width: 160px; font-size: 16px;  background-color: #2082F9; color: white"
-                                  @click="openDatasetLoadingPanel"
-                                  :icon="h(FolderOutlined)">
-                                  从数据库加载
-                          </a-button>
-                          <!-- 分割线 -->
-                          <!-- <div style="width: 2px; height: 136px; background-color: #808080; position: absolute; right: 185px; bottom: 0px; border-radius: 1px;"></div> -->
-                          <!-- 显示已加载的数据名称 -->
-                          <div style="display: flex; position: relative;width: 100%;height: 100%">
-                            <!-- <div style="font-size: 18px; font-weight: 600">已加载数据</div> -->
-                            <div class="highlight"
-                                 :style="{color: getColor(usingDatafile), position: 'relative', 'margin-top': '30px'}"
-                                 :title="usingDatafile">
-                                  已加载数据：{{ usingDatafile }}
-                            </div>
-                          </div>
+                      <a-button
+                              type="default"
+                              style="margin-top: 25px; margin-left: 0px; width: 160px; font-size: 16px;  background-color: #2082F9; color: white"
+                              @click="openDatasetLoadingPanel"
+                              :icon="h(FolderOutlined)">
+                              从数据库加载
+                      </a-button>
+                      <!-- 分割线 -->
+                      <!-- <div style="width: 2px; height: 136px; background-color: #808080; position: absolute; right: 185px; bottom: 0px; border-radius: 1px;"></div> -->
+                      <!-- 显示已加载的数据名称 -->
+                      
+                      <!-- <div style="font-size: 18px; font-weight: 600">已加载数据</div> -->
+                      <div class="highlight"
+                          :style="{ color: getColor(usingDatafile), position: 'relative', 'margin-top': '30px', 'max-width': '300px', 'word-wrap': 'break-word' }"
+                          :title="usingDatafile">
+                        已加载数据：{{ usingDatafile }}
+                      </div>
+                      
                     </div>
                     <el-dialog v-model="datasetManagementDialog" width="1000px">
                       <template #header>
@@ -1627,7 +1584,7 @@
             prop="name"
         >
           <el-input
-              style="width: 160px;"
+              style="width: 200px;"
               v-model="modelInfoForm.name"
               autocomplete="off"/>
         </el-form-item>
@@ -1637,10 +1594,10 @@
           :label-width='140' 
           prop="description"
         >
-          <el-input style="width: 160px;" v-model="modelInfoForm.description"/>
+          <el-input style="width: 200px;" v-model="modelInfoForm.description"/>
         </el-form-item>
 
-        <!--      选择挂载的树节点-->
+        <!-- 选择挂载的类型-->
 
         <el-form-item
             label="适配部件"
@@ -1650,7 +1607,7 @@
           <a-tree-select
               v-model:value="modelInfoForm.class"
               show-search
-              style="width: 100%"
+              style="width: 200px"
               :dropdown-style="{ maxHeight: '400px', overflow: 'auto' }"
               placeholder="请选择适配部位分类"
               allow-clear
@@ -1666,9 +1623,9 @@
         </el-form-item>
       </el-form>
       <span class="dialog-footer">
-                <el-button style="margin-left: 85px; width: 150px;" @click="dialogModle = false">取消</el-button>
-                <el-button style="width: 150px;" type="primary" @click="saveModelConfirm(modelInfoFormRef)">确定</el-button>
-              </span>
+        <el-button style="margin-left: 85px; width: 150px;" @click="dialogModle = false">取消</el-button>
+        <el-button style="width: 150px;" type="primary" @click="saveModelConfirm(modelInfoFormRef)">确定</el-button>
+      </span>
     </a-modal>
   </div>
 </template>
@@ -1696,6 +1653,7 @@ import {
   QuestionCircleOutlined,
   UploadOutlined
 } from "@ant-design/icons-vue";
+import ComponentTree from './ComponentTree.vue';
 import type {UploadProps} from "ant-design-vue";
 import {message} from "ant-design-vue";
 import {Rule} from "ant-design-vue/es/form";
@@ -1715,7 +1673,7 @@ import PublishModel from './PublishModel.vue';
 import datasetManagement from './datasetManagement.vue';
 //////////////////////////////////////////////////////////////////系统组件源码编辑相关
 import editCodeEmbedded from './editCodeEmbedded.vue';
-//下载报告
+
 
 //模型管理
 // 当子组件删除模型，并且该模型已经被加载，则需要重置模型
@@ -1919,238 +1877,7 @@ const onItemClickOfMycollapse = (data) => {
 ///////////////////////////////////////////////////////////////////////////////sidebar end
 
 ///////////////////////////////////////////////////////////////////////////////树--start
-interface Tree {
-  id: number
-  label: string
-  children?: Tree[]
-}
 
-const treeRef = ref<InstanceType<typeof ElTree>>()
-
-let idOfTree = 1000
-
-//是否展开全部
-let isExpandAllOfTree = ref(false)
-
-// 搜索关键字
-const searchKeywordOfTree = ref('')
-// 是否显示编辑对话框
-const isEditDialogVisibleOfTree = ref(false)
-// 当前编辑的节点
-const editingNodeOfTree = ref<Tree | null>(null)
-// 编辑框中的节点名称
-const editNodeLabelOfTree = ref('')
-
-// 数据源
-const dataSourceOfTree = ref<Tree[]>([
-  {
-    value: 1,
-    label: '某型号轨道列车',
-    disabled: true, // 禁用该节点
-    children: [
-      {
-        value: 11,
-        label: '转向架',
-        disabled: true, // 禁用该节点
-        children: [
-          {
-            value: 111,
-            label: '构架系统',
-            disabled: true, // 禁用该节点
-            children: [
-              {
-                value: 1111,
-                label: '构架组成',
-                disabled: true, // 禁用该节点
-                children: [
-                  {value: 11111, label: '侧梁组成'},
-                  {value: 11112, label: '空气弹簧座板'},
-                  {value: 11113, label: '高度阀调整杆安装销'},
-                  {value: 11114, label: '扣板组成'},
-                  {value: 11115, label: '端梁座'},
-                  {value: 11116, label: '弹簧座'},
-                  {value: 11117, label: '弹簧座板'},
-                  {value: 11118, label: '闸线架支座'},
-                  {value: 11119, label: '线夹座'},
-                  {value: 11120, label: '止挡座组成'},
-                  {value: 11121, label: '安全吊链座'},
-                  {value: 11122, label: '侧梁工艺块'},
-                  {value: 11123, label: '长筋板'},
-                  {value: 11124, label: '托板组成'},
-                  {value: 11125, label: '短扣板'},
-                  {value: 11126, label: '压差阀座'},
-                  {value: 11127, label: '转向架铭牌'},
-                  {value: 11128, label: '构架序列号标志牌'},
-                  {value: 11129, label: '短筋板'},
-                ],
-              },
-              {
-                value: 1112,
-                label: '构架衡量组成',
-                disabled: true, // 禁用该节点
-                children: [
-                  {value: 1113, label: '横梁钢管组成'},
-                  {value: 1114, label: '牵引电机吊座组成'},
-                  {value: 1115, label: '齿轮箱吊座组成'},
-                  {value: 1116, label: '构架牵引拉杆座'},
-                  {value: 1117, label: '纵向连接梁'},
-                  {value: 1118, label: '横向止挡组成'},
-                  {value: 1119, label: '横梁组成垂直挡'},
-                  {value: 1120, label: '构架外牵引拉杆座'},
-                ],
-              },
-              {
-                value: 1121,
-                label: '构架端梁组成',
-                disabled: true, // 禁用该节点
-                children: [
-                  {value: 1122, label: '端梁安装梁'},
-                  {value: 1123, label: '端梁安装座组成'},
-                ],
-              },
-            ],
-          },
-          {
-            value: 112,
-            label: '转向架附件',
-            disabled: true, // 禁用该节点
-            children: [
-              {value: 113, label: '转向架排障装置'},
-              {value: 114, label: '轮缘润滑装置'},
-            ],
-          },
-          {
-            value: 115,
-            label: '牵引装置系统',
-            disabled: true, // 禁用该节点
-            children: [
-              {value: 116, label: '中心销'},
-              {value: 117, label: '牵引梁组成'},
-              {value: 118, label: '牵引拉杆组成'},
-              {value: 119, label: '下盖'},
-            ],
-          },
-          // ... 其他子项
-        ],
-      },
-      {
-        value: 12,
-        label: '车体',
-        disabled: true, // 禁用该节点
-        children: [
-          {value: 121, label: '车顶'},
-          {value: 122, label: '车身侧面'},
-          {value: 123, label: '车身底部'},
-        ],
-      },
-      {
-        value: 13,
-        label: '电气系统',
-        disabled: true, // 禁用该节点
-        children: [
-          {value: 131, label: '牵引供电系统'},
-          {value: 132, label: '辅助供电系统'},
-          {value: 133, label: '列车控制系统'},
-        ],
-      },
-      {
-        value: 14,
-        label: '车内设施',
-        disabled: true, // 禁用该节点
-        children: [
-          {value: 141, label: '座椅和客舱布局'},
-          {value: 142, label: '餐饮和服务设施'},
-          {value: 143, label: '信息显示和广播系统'},
-        ],
-      },
-    ],
-  },
-])
-
-// 搜索过滤后的数据
-const filteredDataOfTree = ref<Tree[]>(dataSourceOfTree.value)
-
-// 添加子节点
-const appendOfTree = (data: Tree) => {
-  console.log("添加节点方法执行...")
-
-  const newChild = {id: idOfTree++, label: 'New Node', children: []}
-  if (!data.children) {
-    data.children = []
-  }
-  data.children.push(newChild)
-  dataSourceOfTree.value = [...dataSourceOfTree.value]  // 更新数据源，刷新树
-}
-
-// 删除节点
-const removeOfTree = (node: Node, data: Tree) => {
-  console.log("删除节点方法执行...")
-  console.log(node)
-
-  const parent = node.parent
-  const children: Tree[] = parent.data.children || parent.data
-  const index = children.findIndex((d) => d.id === data.id)
-  if (index !== -1) {
-    children.splice(index, 1)
-    dataSourceOfTree.value = [...dataSourceOfTree.value]  // 更新数据源，刷新树
-  }
-}
-
-// 编辑节点
-const editOfTree = (node: Node, data: Tree) => {
-  console.log("编辑节点方法执行...")
-  console.log(node)
-
-  editingNodeOfTree.value = data
-  editNodeLabelOfTree.value = data.label
-  isEditDialogVisibleOfTree.value = true
-}
-
-// 保存编辑
-const saveEditOfTree = () => {
-  if (editingNodeOfTree.value) {
-    editingNodeOfTree.value.label = editNodeLabelOfTree.value
-    dataSourceOfTree.value = [...dataSourceOfTree.value] // 更新树数据
-    isEditDialogVisibleOfTree.value = false
-  }
-}
-
-// 关闭编辑对话框时清理状态
-const handleCloseOfTree = () => {
-  editingNodeOfTree.value = null
-  editNodeLabelOfTree.value = ''
-}
-
-// 递归过滤节点数据
-const filterDataOfTree = (nodes: Tree[], keyword: string): Tree[] => {
-  return nodes
-      .filter((node) => node.label.toLowerCase().includes(keyword.toLowerCase()))  // 匹配节点名称
-      .map((node) => {
-        // 递归过滤子节点
-        if (node.children) {
-          node.children = filterDataOfTree(node.children, keyword)
-        }
-        return node
-      })
-}
-
-// 处理搜索输入
-watch(searchKeywordOfTree, (val) => {
-  treeRef.value!.filter(val)
-})
-
-// const handleSearchOfTree = () => {
-//   if (searchKeywordOfTree.value != '') {
-//     filteredDataOfTree.value = filterDataOfTree(dataSourceOfTree.value, searchKeywordOfTree.value)
-//   } else {
-//     filteredDataOfTree.value = dataSourceOfTree.value  // 清空搜索时恢复原始数据
-//   }
-// }
-
-const filterNodeOfTree = (value: string, data: Tree) => {
-  if (!value) return true
-  return data.label.includes(value)
-}
 /////////////////////////////////////////////////////////////////////////////////树end
 
 ///////////////////////////////////////////////////////////////////////////////el-main分割start
@@ -3655,11 +3382,36 @@ function buildContentJson() {
     console.log('构建的contentJson', contentJson);
   }
 }
-//保存模型
-function saveModelOfViewFlow() {
-  //显示保存模型表单
-  dialogModle.value = true
 
+
+
+interface Tree {
+  label: string; // 节点名称
+  value: string; // 节点id
+  disabled: boolean; // 是否禁用添加子类型
+  children?: Tree[]; // 子节点
+}
+const dataSourceOfTree = reactive<Tree[]>([])
+
+// 获取模型结构树
+const getComponentTrees = async() => {
+  api.get("user/get_component_trees").then((response: any) => {
+    // 请求成功，后端返回数据
+    if (response.data.code === 200) {
+      dataSourceOfTree.length = 0;
+      response.data.trees.map((tree: Tree) => dataSourceOfTree.push(tree));
+      console.log("获取到树形结构: ", dataSourceOfTree);
+    } else {
+      ElMessage.error("获取树形结构失败，" + response.data.message);
+    }
+  });
+};
+
+//保存模型
+async function saveModelOfViewFlow() {
+  //显示保存模型表单
+  await getComponentTrees();
+  dialogModle.value = true
 }
 
 //运行模型
@@ -4938,6 +4690,7 @@ const userRole = ref('');  // 用户登录时所选择的角色，用于区分�
 // 将建立模型的连线操作、用户名设置、区分普通用户和系统用户的功能, 挂在到onMounted中
 const linkedList = new LinkedList()
 onMounted(() => {
+  // fetchComponentTrees();
   //新增的elmain start
   // loadStateOfElMain()
   // 添加resize事件监听器，使用节流后的函数
@@ -8790,7 +8543,7 @@ ul > li {
 .status-indicator {
   position: absolute;
   top: 10px;
-  left: 10px;
+  left: 35%;
   padding: 5px 10px;
   border-radius: 5px;
   border: solid 1px rgba(0, 0, 0, 0.2);
@@ -9120,7 +8873,6 @@ import '@fortawesome/fontawesome-free/css/all.css';
 .node-label {
   //background-color: red;
 }
-
 .node-actions {
   display: flex;
   align-items: center;
