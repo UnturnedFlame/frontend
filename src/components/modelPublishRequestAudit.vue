@@ -1,5 +1,5 @@
 <template>
-  <div class="shadow-border title-container">模型发布申请审核</div>
+  <div class="shadow-border title-container">模型审核</div>
   <div class="table-container">
     <el-table
       :data="tableData"
